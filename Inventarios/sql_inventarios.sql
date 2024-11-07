@@ -181,6 +181,12 @@ create table historial_stock(
 	constraint  historial_stock_productos_fk foreign key(id_producto) references productos(codigo)
 );
 
+insert into historial_stock(fecha, referencia, id_producto, cantidad)
+values
+( '6/11/2024 19:54:00', 'Pedido 1',1,100),
+( '6/12/2024 19:54:00', 'Pedido 1',2,100);
+
+
 
 create table cabecera_ventas(
 	codigo serial not null,
@@ -217,3 +223,15 @@ values
 (1,2,5,0.36,0.36,0.4);
 
 
+SELECT * FROM proveedores;
+SELECT * FROM tipo_documentos;
+SELECT * FROM cabecera_pedido;
+SELECT * FROM estados_pedidos;
+SELECT * FROM detalle_pedido;
+SELECT * FROM historial_stock;
+SELECT * FROM detalle_ventas;
+SELECT * FROM cabecera_ventas;
+SELECT * FROM productos;
+SELECT * FROM unidades_medida;
+SELECT * FROM categorias_unidad_medida;
+SELECT * FROM categorias;
