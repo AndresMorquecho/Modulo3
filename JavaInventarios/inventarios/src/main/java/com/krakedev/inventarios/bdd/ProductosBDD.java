@@ -19,7 +19,7 @@ public class ProductosBDD {
 
 		Connection con = null;
 		PreparedStatement ps = null;
-		ArrayList<Productos> productos = null;
+		ArrayList<Productos> productos = new ArrayList<Productos>();
 		ResultSet rs = null;
 		String sql = "SELECT "
 	            + "    prod.codigo AS codigo_producto, "
@@ -46,7 +46,7 @@ public class ProductosBDD {
 			ps = con.prepareStatement(sql);
 			ps.setString(1,  "%" +subcadena.toUpperCase() + "%");
 			rs = ps.executeQuery();
-
+					
 			while (rs.next()) {
 
 				int codigoProducto = rs.getInt("codigo_producto");
@@ -81,7 +81,7 @@ public class ProductosBDD {
 				producto.setCategoria(categoria);
 				producto.setStock(stock);
 
-				productos = new ArrayList<Productos>();
+				
 
 				productos.add(producto);
 
