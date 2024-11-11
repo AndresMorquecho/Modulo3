@@ -21,32 +21,20 @@ public class ProductosBDD {
 		PreparedStatement ps = null;
 		ArrayList<Productos> productos = new ArrayList<Productos>();
 		ResultSet rs = null;
-		String sql = "SELECT "
-	            + "    prod.codigo AS codigo_producto, "
-	            + "    prod.nombre AS nombre_producto, "
-	            + "    udm.codigo_nombre AS codigo_unidad_medida, "
-	            + "    udm.descripcion AS descripcion_udm, "
-	            + "    cast(prod.precio_venta as decimal(6,2)), "
-	            + "    prod.tiene_iva, "
-	            + "    cast(prod.coste as decimal (6,2) ), "
-	            + "    cat.codigo_cat AS codigo_categoria, "
-	            + "    cat.nombre AS nombre_categoria, "
-	            + "    prod.stock "
-	            + "FROM "
-	            + "    productos prod "
-	            + "JOIN "
-	            + "    unidades_medida udm ON prod.id_unidades_medida = udm.codigo_nombre "
-	            + "JOIN "
-	            + "    categorias cat ON prod.id_categorias = cat.codigo_cat "
-	            + "WHERE upper(prod.nombre) like ?";
-
+		String sql = "SELECT " + "    prod.codigo AS codigo_producto, " + "    prod.nombre AS nombre_producto, "
+				+ "    udm.codigo_nombre AS codigo_unidad_medida, " + "    udm.descripcion AS descripcion_udm, "
+				+ "    cast(prod.precio_venta as decimal(6,2)), " + "    prod.tiene_iva, "
+				+ "    cast(prod.coste as decimal (6,2) ), " + "    cat.codigo_cat AS codigo_categoria, "
+				+ "    cat.nombre AS nombre_categoria, " + "    prod.stock " + "FROM " + "    productos prod " + "JOIN "
+				+ "    unidades_medida udm ON prod.id_unidades_medida = udm.codigo_nombre " + "JOIN "
+				+ "    categorias cat ON prod.id_categorias = cat.codigo_cat " + "WHERE upper(prod.nombre) like ?";
 
 		try {
 			con = ConexionBDD.obtenerConexion();
 			ps = con.prepareStatement(sql);
-			ps.setString(1,  "%" +subcadena.toUpperCase() + "%");
+			ps.setString(1, "%" + subcadena.toUpperCase() + "%");
 			rs = ps.executeQuery();
-					
+
 			while (rs.next()) {
 
 				int codigoProducto = rs.getInt("codigo_producto");
@@ -81,8 +69,6 @@ public class ProductosBDD {
 				producto.setCategoria(categoria);
 				producto.setStock(stock);
 
-				
-
 				productos.add(producto);
 
 			}
@@ -109,8 +95,52 @@ public class ProductosBDD {
 		}
 
 		return productos;
-		
-		
+
 	}
+
+	public void Crear(Productos producto) throws KrakeDevException {
+
+		Connection con = null;
+		PreparedStatement ps = null;
+		String sql = "Insert into productos (nombre, id_unidades_medida, precio_venta, tiene_iva, coste, id_categorias, stock) "
+				+ "values(?,?,?,?,?,?,?)";
+
+		try {
+			con = ConexionBDD.obtenerConexion();
+			ps = con.prepareStatement(sql);
+
+			ps.setString(1, producto.getNombre());
+			ps.setString(2, producto.getUnidadDeMedida().getNombre());
+			ps.setBigDecimal(3, producto.getPrecioVenta());
+			ps.setBoolean(4, producto.isTieneIva());
+			ps.setBigDecimal(5, producto.getCoste());
+			ps.setInt(6, producto.getCategoria().getCodigo());
+			ps.setInt(7, producto.getStock());
+
+			ps.executeUpdate();
+
+		} catch (KrakeDevException e) {
+
+			e.printStackTrace();
+
+			throw new KrakeDevException("Error al intentar coneectase a la base de datos " + e.getMessage());
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+			throw new KrakeDevException("Error en la consulta SQL  " + e.getMessage());
+
+		}finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+
+	}
+	
 
 }

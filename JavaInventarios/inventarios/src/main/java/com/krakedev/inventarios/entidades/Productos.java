@@ -65,9 +65,13 @@ public class Productos {
 	public void setPrecioVenta(BigDecimal precioVenta) {
 		this.precioVenta = precioVenta;
 	}
+	
+	
 	public boolean isTieneIva() {
 		return tieneIva;
 	}
+	
+	
 	public void setTieneIva(boolean tieneIva) {
 		this.tieneIva = tieneIva;
 	}
