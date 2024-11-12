@@ -90,4 +90,64 @@ public class PedidosBDD {
 
 	}
 
+	public void Entregar(Pedido pedidoentregado) throws KrakeDevException {
+
+		Connection con = null;
+		PreparedStatement ps = null;
+		PreparedStatement psDet = null;
+		String sql = "update cabecera_pedido set id_estado_pedido = 'R' where numero = ?";
+
+		try {
+			con = ConexionBDD.obtenerConexion();
+			ps = con.prepareStatement(sql);
+			ps.setInt(1, pedidoentregado.getCodigo());
+			ps.executeUpdate();
+
+			ArrayList<DetallePedido> detallesPedidosentregado = pedidoentregado.getDetalles();
+			String sqlDetalles = "update detalle_pedido set cantidad_recibida = ?, subtotal = ?  where codigo = ?";
+
+			DetallePedido detallesPedidosEntregados = null;
+
+			for (int i = 0; i < detallesPedidosentregado.size(); i++) {
+
+				detallesPedidosEntregados = detallesPedidosentregado.get(i);
+				psDet = con.prepareStatement(sqlDetalles);
+
+				psDet.setInt(1, detallesPedidosEntregados.getCantidadRecibida());
+
+				BigDecimal pv = detallesPedidosEntregados.getProducto().getPrecioVenta();
+				BigDecimal cantidad = new BigDecimal(detallesPedidosEntregados.getCantidadRecibida());
+				BigDecimal subtotal = pv.multiply(cantidad);
+
+				psDet.setBigDecimal(2, subtotal);
+				
+				psDet.setInt(3, detallesPedidosEntregados.getCodigo());
+				
+				
+				psDet.executeUpdate();
+				
+
+			}
+
+		} catch (KrakeDevException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+
+			throw new KrakeDevException("Error en la conexion de base de datos: " + e.getMessage());
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new KrakeDevException("Error en registro de pedido: " + e.getMessage());
+		} finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+	}
+
 }
