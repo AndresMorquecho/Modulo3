@@ -95,8 +95,9 @@ public class PedidosBDD {
 		Connection con = null;
 		PreparedStatement ps = null;
 		PreparedStatement psDet = null;
+		PreparedStatement psHS = null;
 		String sql = "update cabecera_pedido set id_estado_pedido = 'R' where numero = ?";
-
+		String sqlHistorial = "Insert into historial_stock(fecha, referencia, id_producto, cantidad) values(?,?,?,?)";
 		try {
 			con = ConexionBDD.obtenerConexion();
 			ps = con.prepareStatement(sql);
@@ -120,13 +121,24 @@ public class PedidosBDD {
 				BigDecimal subtotal = pv.multiply(cantidad);
 
 				psDet.setBigDecimal(2, subtotal);
-				
-				psDet.setInt(3, detallesPedidosEntregados.getCodigo());
-				
-				
-				psDet.executeUpdate();
-				
 
+				psDet.setInt(3, detallesPedidosEntregados.getCodigo());
+
+				psDet.executeUpdate();
+
+				psHS = con.prepareStatement(sqlHistorial);
+				Date fechActual = new Date();
+				java.sql.Date fechaSql = new java.sql.Date(fechActual.getTime());
+
+				psHS.setDate(1, fechaSql);
+				psHS.setString(2, "Pedido: " + pedidoentregado.getCodigo());
+				psHS.setInt(3, detallesPedidosEntregados.getProducto().getCodigo());
+				psHS.setInt(4, detallesPedidosEntregados.getCantidadRecibida());
+
+				psHS.executeUpdate();
+				
+				
+					
 			}
 
 		} catch (KrakeDevException e) {
