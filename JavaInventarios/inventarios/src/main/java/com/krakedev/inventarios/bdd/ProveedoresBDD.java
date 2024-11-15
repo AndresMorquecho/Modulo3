@@ -119,5 +119,79 @@ public class ProveedoresBDD {
 	}
 	
 	
+	public Proveedores buscarProv(String idProv) throws KrakeDevException {
+		
+		
+		Connection con = null;
+		PreparedStatement ps = null;
+		String sql = "select * from proveedores join tipo_documentos ON tipo_documentos.codigo_tipo_doc = proveedores.id_tipo_documetos where id = ?";
+		ResultSet rs = null;
+		Proveedores prov = new Proveedores();
+		tipoDocumetos tipodoc = new tipoDocumetos();
+		
+		
+		try {
+			con = ConexionBDD.obtenerConexion();
+			ps = con.prepareStatement(sql);
+			ps.setString(1, idProv);
+			rs =ps.executeQuery();
+			
+			
+			if(rs.next()) {
+				
+				String idProveedor = rs.getString("id");
+				String codEp = rs.getString("codigo_tipo_doc");
+				String descripcion = rs.getString("descripcion");
+				
+				String nombreProv = rs.getString("nombre");
+				String telefono = rs.getString("telefono");
+				String correo = rs.getString("correo");
+				String direccion = rs.getString("direccion");
+				
+				
+				tipodoc.setCodigoTipoDoc(codEp);
+				tipodoc.setDescripcion(descripcion);
+				
+				prov.setIdentificador(idProveedor);
+				prov.setTipoDocumento(tipodoc);
+				prov.setNombre(nombreProv);
+				prov.setTelefono(telefono);
+				prov.setCorreo(correo);
+				prov.setDireccion(direccion);
+				
+				
+				
+				
+			}
+			
+			
+			
+		} catch (KrakeDevException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+			throw new KrakeDevException("Error en la conexion a la base de datos" + e.getMessage());
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+			throw  new KrakeDevException("Error en la inserccón de un nuevo proveedor, detalles: "+ e.getMessage());
+			
+		}finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new KrakeDevException("Error en la conexion a la base de datos" + e.getMessage());
+				
+			}
+			
+		}
+		
+		return prov;
+		
+	}
+	
+	
 	
 }

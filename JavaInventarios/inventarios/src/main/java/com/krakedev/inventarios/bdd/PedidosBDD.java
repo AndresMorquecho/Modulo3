@@ -9,7 +9,10 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.krakedev.inventarios.entidades.DetallePedido;
+import com.krakedev.inventarios.entidades.EstadoPedido;
 import com.krakedev.inventarios.entidades.Pedido;
+import com.krakedev.inventarios.entidades.Productos;
+import com.krakedev.inventarios.entidades.Proveedores;
 import com.krakedev.inventarios.excepciones.KrakeDevException;
 import com.krakedev.inventarios.utils.ConexionBDD;
 
@@ -136,9 +139,7 @@ public class PedidosBDD {
 				psHS.setInt(4, detallesPedidosEntregados.getCantidadRecibida());
 
 				psHS.executeUpdate();
-				
-				
-					
+
 			}
 
 		} catch (KrakeDevException e) {
@@ -160,6 +161,90 @@ public class PedidosBDD {
 			}
 		}
 
+	}
+
+	public ArrayList<Pedido> buscarPedidoPorProv(String id) throws KrakeDevException {
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		ArrayList<Pedido> pedidos = new ArrayList<Pedido>();
+		String sql = "select * from cabecera_pedido "
+				+ "join detalle_pedido on cabecera_pedido.numero = detalle_pedido.id_cabecera_pedido "
+				+ "join productos ON productos.codigo = detalle_pedido.id_producto "
+				+ "where cabecera_pedido.id_proveedor = ?";
+
+		try {
+			con = ConexionBDD.obtenerConexion();
+			ps = con.prepareStatement(sql);
+			ps.setString(1, id);
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				Pedido pd = new Pedido();
+				Proveedores prov = new Proveedores();
+				EstadoPedido ep = new EstadoPedido();
+				DetallePedido detped = new DetallePedido();
+				Productos prod = new Productos();
+
+				int codigo = rs.getInt("numero");
+				String idprov = rs.getString("id_proveedor");
+				Date fecha = rs.getDate("fecha");
+				String codEp = rs.getString("id_estado_pedido");
+
+				int codigodetP = rs.getInt("codigo");
+
+				Pedido cabeceraPed = new Pedido();
+
+				int codProd = rs.getInt("id_producto");
+				int cantSolicitada = rs.getInt("cantidad_solicitada");
+
+				String subtotalString = rs.getString("subtotal");
+				BigDecimal subtotal = new BigDecimal(subtotalString.replaceAll("[^0-9.]", ""));
+
+				int cantRecibida = rs.getInt("cantidad_recibida");
+
+				prov.setIdentificador(idprov);
+				ep.setCodigo(codEp);
+				cabeceraPed.setCodigo(codigo);
+
+				detped.setCodigo(codigodetP);
+				detped.setCabecera(cabeceraPed);
+
+				prod.setCodigo(codProd);
+				prod.setNombre(rs.getString("nombre"));
+
+				detped.setProducto(prod);
+				detped.setCantidadSolicitada(cantSolicitada);
+				detped.setSubtotal(subtotal);
+				detped.setCantidadRecibida(cantRecibida);
+
+				ArrayList<DetallePedido> detalles = new ArrayList<DetallePedido>();
+				detalles.add(detped);
+
+				pd.setCodigo(codigo);
+				pd.setProveedor(prov);
+				pd.setFecha(fecha);
+				pd.setEstadoPedido(ep);
+				pd.setDetalles(detalles);
+
+				pedidos.add(pd);
+			}
+
+		} catch (KrakeDevException | SQLException e) {
+			e.printStackTrace();
+			throw new KrakeDevException("error " + e.getMessage());
+
+		} finally {
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return pedidos;
 	}
 
 }

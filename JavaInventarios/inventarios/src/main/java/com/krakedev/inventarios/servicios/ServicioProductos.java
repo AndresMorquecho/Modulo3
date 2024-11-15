@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -60,4 +61,44 @@ public class ServicioProductos {
 
 	}
 
+	@Path("actualizar")
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response editar(Productos producto) {
+		ProductosBDD prodBDD = new ProductosBDD();
+		try {
+			prodBDD.Actualizar(producto);
+			return Response.ok().build();
+		} catch (KrakeDevException e) {
+
+			e.printStackTrace();
+
+			System.out.println("Error: " + e.getLocalizedMessage());
+			return Response.serverError().build();
+
+		}
+
+	}
+
+	@Path("buscarPorID/{id}")
+	@GET
+	@Produces(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+	public Response buscarPorID(@PathParam("id") int id) {
+
+		ProductosBDD prodBDD = new ProductosBDD();
+		Productos productos = new Productos();
+
+		try {
+			productos = prodBDD.buscarPorIdProd(id);
+
+			return Response.ok(productos).build();
+
+		} catch (KrakeDevException e) {
+
+			System.out.println("error: " + e.getMessage());
+			return Response.serverError().entity("error al consultar : " + e.getMessage()).build();
+
+		}
+
+	}
 }
