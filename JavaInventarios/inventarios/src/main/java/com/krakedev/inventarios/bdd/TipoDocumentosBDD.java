@@ -59,5 +59,38 @@ public class TipoDocumentosBDD {
 		return tipoDocumetos;
 
 	}
+	
+	
+	public void createTipoDocumento (tipoDocumetos nuevoDocumento) throws KrakeDevException {
+		
+		Connection con = null;
+		PreparedStatement ps = null;
+		String sql = "insert into tipo_documentos(codigo_tipo_doc, descripcion) values(?,?)";
+		try {
+			con = ConexionBDD.obtenerConexion();
+			
+			ps = con.prepareStatement(sql);
+			
+			ps.setString(1, nuevoDocumento.getCodigoTipoDoc());
+			ps.setString(2, nuevoDocumento.getDescripcion());
+			
+			ps.executeUpdate();
+			
+		} catch (KrakeDevException e) {
+			e.printStackTrace();
+			throw new KrakeDevException("Error en la conexion a la base de datos: " + e.getLocalizedMessage());
+		} catch (SQLException e) {
+			throw new KrakeDevException("error al insertar el nuevo tipo de documento: " + e.getMessage());
+		}finally {
+			try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+	}
 
 }

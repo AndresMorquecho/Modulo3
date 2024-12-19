@@ -1,0 +1,106 @@
+ Stack Navegation
+Configuracion de Navegacion
+
+npm install @react-navigation/native
+npx expo install react-native-screens react-native-safe-area-context
+
+Ejemplo de importacion
+
+import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+
+export default function App() {
+  return (
+    <NavigationContainer>{/* Rest of your app code */}</NavigationContainer>
+  );
+}
+
+
+Esquema de navegacion:
+Stack Navigator
+instalar: 
+
+npm install @react-navigation/native-stack
+
+
+Drawer navigation
+1 instalar paquetes
+
+npm install @react-navigation/drawer
+npm install react-native-reanimated
+npm install react-native-safe-area-context
+npm install react-native-gesture-handler 
+4 de una sola
+
+npm install @react-navigation/drawer react-native-reanimated react-native-safe-area-context react-native-gesture-handler
+
+
+2 Babel config
+
+3 import "@react-navigation/drawer";
+
+expo update
+expo start --clear
+
+Tab navigation BOTOON 
+npm install @react-navigation/bottom-tabs
+
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+const MyTabs = createBottomTabNavigator({
+  screens: {
+    Home: HomeScreen,
+    Profile: ProfileScreen,
+  },
+});
+
+
+React Navite Elements |Implementaciones (Iconos)
+npm install @rneui/themed @rneui/base
+npm install react-native-vector-icons
+
+vector icons oblador - buscar
+documentacion saber la familia
+
+
+
+POST CON FETCH
+
+import { Alert } from "react-native";
+
+
+export const crearCategoria = (item)=>{
+
+
+    const conf ={
+
+        method:'POST',
+        body: JSON.stringify({
+            codCateogria: item.cod,
+            nombreCategoria: item.nombre
+        }),
+        headers: {
+            "Content-type": 'application/json'
+        }
+
+
+
+    }
+
+
+    fetch('http://192.168.1.5:8080/isam/isam/categoria/create', conf)
+    .then(response =>{
+        if(response.ok){
+            console.log("exito")
+            Alert.alert("Funciono","Nueva categoria creado con exito")
+        }else{
+            return response.text().then(text =>{
+                throw new Error(`Error al crear la categoria: ${text}`);
+            });
+        }
+    })
+    .then(response => console.log('Response:', response))
+    .catch(error => console.error('Error:', error, error.message));
+  
+
+}
